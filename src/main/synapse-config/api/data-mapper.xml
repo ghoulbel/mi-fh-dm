@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/data-mapper" name="data-mapper" xmlns="http://ws.apache.org/ns/synapse">
+
+<resource methods="GET" uri-template="/health">
+        <inSequence>
+            <log level="custom" category="DEBUG">
+                <property name="/data-mapper/health" value="inSequence"/>
+            </log>
+            <payloadFactory media-type="json">
+                <format>
+                    {
+                        "status": "UP"
+                    }
+                </format>
+                <args></args>
+            </payloadFactory>
+            <respond />
+        </inSequence>
+        <outSequence>
+            <respond />
+        </outSequence>
+        <faultSequence>
+            <respond />
+        </faultSequence>
+    </resource>
+
+    <resource methods="POST" uri-template="/convert">
+        <inSequence>
+            <log level="custom" category="INFO">
+                <property name="/data-mapper/convert" value="inSequence" />
+            </log>
+            <datamapper config="gov:datamapper/schema/mappingconfig.dmc" inputSchema="gov:datamapper/schema/mappingconfig_inputSchema.json" inputType="CSV" outputSchema="gov:datamapper/schema/mappingconfig_outputSchema.json" outputType="XML"/>
+            <log level="full"/>
+            <respond/>
+        </inSequence>
+        <outSequence>
+            <property name="HTTP_SC" scope="axis2" type="STRING" value="201"/>
+        </outSequence>
+        <respond/>
+        <faultSequence/>
+    </resource>
+</api>
