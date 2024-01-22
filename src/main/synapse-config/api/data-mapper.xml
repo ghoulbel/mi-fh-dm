@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <api context="/data-mapper" name="data-mapper" xmlns="http://ws.apache.org/ns/synapse">
-
-<resource methods="GET" uri-template="/health">
+    <resource methods="GET" uri-template="/health">
         <inSequence>
             <log level="custom" category="DEBUG">
                 <property name="/data-mapper/health" value="inSequence"/>
@@ -23,7 +22,6 @@
             <respond />
         </faultSequence>
     </resource>
-
     <resource methods="POST" uri-template="/convert">
         <inSequence>
             <log level="custom" category="INFO">
@@ -31,10 +29,17 @@
             </log>
             <datamapper config="gov:datamapper/schema/mappingconfig.dmc" inputSchema="gov:datamapper/schema/mappingconfig_inputSchema.json" inputType="CSV" outputSchema="gov:datamapper/schema/mappingconfig_outputSchema.json" outputType="XML"/>
             <log level="full"/>
+            <property name="HTTP_SC" value="201" scope="axis2" />
+            <header name="X-File-Name" value="foo.xml" scope="transport"/>
+            <call>
+                <endpoint>
+                    <http method="POST" uri-template="http://fh:5000/send?profile=data-out"/>
+                </endpoint>
+            </call>
             <respond/>
         </inSequence>
         <outSequence>
-            <property name="HTTP_SC" scope="axis2" type="STRING" value="201"/>
+            <respond/>
         </outSequence>
         <respond/>
         <faultSequence/>
